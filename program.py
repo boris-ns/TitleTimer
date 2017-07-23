@@ -23,11 +23,23 @@ def is_time_format(line):
 def time_to_str(time):
     return datetime.strftime(time, "%H:%M:%S,%f")[:-3]
 
+def can_substract_time(time, seconds):
+    hours = int(datetime.strftime(time, "%H"))
+    minutes = int(datetime.strftime(time, "%M"))
+    seconds = float(datetime.strftime(time, "%S.%f"))
+
+    start_time_seconds = hours * 3600 + minutes * 60 + seconds
+    
+    return start_time_seconds > seconds
+
 def change_time(content, seconds):
     for line in content:
         start_time, end_time = is_time_format(line)
         
         if start_time == None and end_time == None:
+            continue
+
+        if seconds < 0 and not can_substract_time(start_time, seconds):
             continue
 
         start_time += timedelta(seconds=seconds)
